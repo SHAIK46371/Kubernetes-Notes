@@ -1,0 +1,35 @@
+Practical Example
+Suppose you have a web application running in a Kubernetes cluster, and you need to deploy a new version of the application. Here’s how you might perform a rolling update:
+
+Update the Deployment Configuration: Modify the Deployment object to point to the new version of your container image.
+
+yaml
+Copy code
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app-container
+        image: my-app:v2  # Update to new version
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+Apply the Update: Use kubectl apply -f deployment.yaml to apply the updated configuration. Kubernetes will then handle the rolling update process as per the strategy defined.
