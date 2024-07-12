@@ -33,3 +33,34 @@ spec:
       maxSurge: 1
       maxUnavailable: 1
 Apply the Update: Use kubectl apply -f deployment.yaml to apply the updated configuration. Kubernetes will then handle the rolling update process as per the strategy defined.
+
+Important Considerations:
+Both maxSurge and maxUnavailable cannot be zero simultaneously. At least one pod must be available during the update.
+Choosing appropriate values depends on your application's tolerance for downtime and desired update speed.
+A higher maxSurge allows for faster updates but might lead to a temporary increase in resource utilization.
+A higher maxUnavailable allows for more pods to be unavailable during the update but can introduce downtime.
+It's recommended to start with low values for maxSurge and maxUnavailable and gradually increase them based on your application's behavior and desired update characteristics.
+
+
+There are a couple of ways to verify you're running the latest application version in a new pod after a Kubernetes rolling update:
+
+1. Using kubectl get pods:
+
+This command displays information about pods in your cluster. Here's how to use it:
+
+kubectl get pods
+This will list details such as pod name, status, container image name, and age. Look for the newly created pod and check the container image name. It should match the image version you deployed in the update.
+
+2. Using kubectl describe pod <pod-name>:
+
+For a more detailed view of a specific pod, use kubectl describe pod <pod-name>. Replace <pod-name> with the actual name of the new pod.
+
+This command provides information like container image name, pod creation time, logs, and events. You can verify the image name and check the pod creation time to confirm it's a newly created pod with the updated image.
+
+3. Verifying Application Functionality:
+
+Ultimately, the most reliable way to ensure the latest application is running is to test its functionality. Here's how you might achieve this:
+Expose your application: If your application has a service exposing it externally, access the service endpoint and test functionalities to confirm everything works as expected with the updated version.
+Exec into the Pod: Use kubectl exec -it <pod-name> bash to get a shell within the new pod. 
+Once inside, you can run commands specific to your application to verify its behavior and version.
+By combining these methods, you can effectively confirm that the latest application version is running successfully in your newly updated pods after a Kubernetes rolling update.
